@@ -14,7 +14,7 @@ class LogTailer:
 
     def tail_log(self):
         if self.platform == 'Windows':
-            tail_process = subprocess.Popen(['powershell.exe', 'Get-Content', self.log_location, '-Wait'], stdout=subprocess.PIPE)
+            tail_process = subprocess.Popen(['tail.exe', '-f', self.log_location], stdout=subprocess.PIPE)
         else:
             tail_process = subprocess.Popen(['tail', '-f', self.log_location], stdout=subprocess.PIPE)
 

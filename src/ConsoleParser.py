@@ -1,10 +1,11 @@
 from CSGOGame import CSGOGame
 
 class ConsoleParser:
-    def __init__(self, console_tailer):
+    def __init__(self, console_tailer,link):
         self.console_tailer = console_tailer
+        self.link = link
         self.csgo_game = None
-
+        
     def listen(self):
         try:
             while True:
@@ -16,6 +17,8 @@ class ConsoleParser:
     def handle(self, log_line):
         if 'Counter-Strike: Global Offensive' in log_line:
             self.csgo_game = CSGOGame()
+        elif '-------------------------' in log_line:
+            self.csgo_game.damage_string()
         elif 'Map:' in log_line:
             self.csgo_game.set_map(log_line.split(' ')[1])
         elif 'Damage' in log_line:
@@ -30,15 +33,20 @@ class ConsoleParser:
         self.csgo_game.register_player(split_line[0])
 
     def damage_report(self, log_line):
+        if 'Damage Given to ' in log_line:
+            if self.csgo_game.lastkiller:
+                text_file = open(self.link+'\cfg\dmg.cfg', "w")
+                text_file.write("say_team "+log_line)
+                text_file.close()
         if 'Damage Taken from' in log_line:
             self.damage_received(log_line)
-        elif 'Damage Given to' in log_line:
+        elif 'Damage Given to "' in log_line:
             self.damage_given(log_line)
 
     def damage_given(self, log_line):
         given_to, damage_amount, hits = self.parse_damage_line(log_line)
         self.csgo_game.damage_given(given_to, damage_amount, hits)
-
+        
     def damage_received(self, log_line):
         given_by, damage_amount, hits = self.parse_damage_line(log_line)
         self.csgo_game.damage_received(given_by, damage_amount, hits)

@@ -7,6 +7,7 @@ class CSGOGame:
         self.players = []
         self.rounds = []
         self.game_active = True
+        self.lastkiller = False
         self.verbose = verbose
         if self.verbose:
             print '---- New Game Initialized ----'
@@ -39,3 +40,9 @@ class CSGOGame:
         if self.game_active:
             self.rounds[self.current_round].generate_round_report()
             self.game_active = False
+
+    def damage_string(self):
+        if self.lastkiller:
+            self.lastkiller = False
+        else:
+            self.lastkiller = True
